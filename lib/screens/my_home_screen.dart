@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/providers/task_provider.dart';
+import 'package:todo_app/widgets/manage_task_form.dart';
+
+import '../models/Task.dart';
 
 class MyHomeScreen extends StatefulWidget {
   const MyHomeScreen({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -21,16 +18,19 @@ class MyHomeScreen extends StatefulWidget {
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
   int _counter = 0;
+  Task? selectedTask;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void _showTaskDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return const AlertDialog(
+            title: Text('Manage task'),
+            content: ManageTaskForm(),
+            actions: <Widget>[],
+          );
+        });
   }
 
   @override
@@ -66,11 +66,11 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               Padding(
                 padding: const EdgeInsets.only(right: 16.0),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
                     'assets/img/avatar-1.png',
-                    width: 44,
-                    height: 44,
+                    width: 40,
+                    height: 40,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -85,19 +85,66 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               ],
             ),
           ),
-          body: TabBarView(
-            children: [
-              TabBarViewItem(counter: _counter,),
-              const Icon(Icons.directions_transit),
-              const Icon(Icons.directions_bike),
-            ],
-          ),
+          body: Consumer<TaskProvider>(builder: (context, provider, child) {
+            return TabBarView(
+              children: [
+                TaskList(tasks: provider.tasks),
+                TaskList(tasks: provider.tasks),
+                TabBarViewItem(
+                  counter: _counter,
+                ),
+              ],
+            );
+          }),
           floatingActionButton: FloatingActionButton(
-            onPressed: _incrementCounter,
             tooltip: 'Increment',
+            onPressed: _showTaskDialog,
             child: const Icon(Icons.add),
           ),
         ));
+  }
+}
+
+class TaskList extends StatelessWidget {
+  final List<Task> tasks;
+
+  const TaskList({super.key, required this.tasks});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: ListView.builder(
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          final task = tasks[index];
+          return ListTile(
+            title: Text(task.title),
+            subtitle: Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(task.description!),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(DateFormat('dd-MMM-yyyy').format(task.dateTime)),
+                    Text(task.status.toShortString())
+                  ],
+                )
+              ],
+            ),
+            // leading: CheckboxListTile(
+            //     value: true,
+            //     onChanged: (value) {
+            //       print(value);
+            //     }),
+            // trailing: Text(task.status.toString()),
+          );
+        },
+      ),
+    );
   }
 }
 

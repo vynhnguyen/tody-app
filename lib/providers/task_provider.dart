@@ -17,7 +17,10 @@ class TaskProvider with ChangeNotifier {
 
   // Load tasks from local storage
   Future<void> loadTasks() async {
+    storage.removeItem('tasks');
     var storedData = storage.getItem('tasks');
+    print('storedData');
+    print(storedData);
     if (storedData != null) {
       List jsonData = jsonDecode(storedData);
       _tasks = List<Task>.from(
@@ -27,12 +30,16 @@ class TaskProvider with ChangeNotifier {
   }
 
   void saveTasks() {
+    print('taskkkkkkkk');
+    print(_tasks);
     List<Map<String, dynamic>> data = _tasks.map((e) => e.toJson()).toList();
     String jsonString = jsonEncode(data);
     storage.setItem('tasks', jsonString);
   }
 
   void addTask(Task task) {
+    print('tasks');
+    print(task.toJson());
     _tasks.add(task);
     saveTasks();
     notifyListeners();
@@ -55,6 +62,10 @@ class TaskProvider with ChangeNotifier {
 
   Task? getTaskById(String id) {
     return _tasks.firstWhere((task) => task.id == id,
-        orElse: () => Task(id: id, title: 'No task', dateTime: DateTime.now()));
+        orElse: () => Task(
+            id: id,
+            title: 'No task',
+            status: TaskStatus.todo,
+            dateTime: DateTime.now()));
   }
 }

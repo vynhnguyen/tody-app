@@ -126,7 +126,7 @@ class OnboardingPage extends StatelessWidget {
         const SizedBox(height: 70),
         Text(
           title,
-          style: GoogleFonts.lato(
+          style: GoogleFonts.roboto(
             textStyle: Theme.of(context).textTheme.displayLarge,
             fontSize: 24,
             fontWeight: FontWeight.w500,
