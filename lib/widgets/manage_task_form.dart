@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
 import '../models/Task.dart';
+import 'task_status_dropdown.dart';
 
 class ManageTaskForm extends StatefulWidget {
   const ManageTaskForm({super.key});
@@ -33,6 +34,7 @@ class _ManageTaskFormState extends State<ManageTaskForm> {
         status: status,
         dateTime: dateTime);
     Provider.of<TaskProvider>(context, listen: false).addTask(task);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -57,6 +59,7 @@ class _ManageTaskFormState extends State<ManageTaskForm> {
               height: 8,
             ),
             TextFormField(
+              maxLines: 2,
               decoration: const InputDecoration(labelText: 'Description'),
               onSaved: (newValue) => description = newValue!,
             ),
@@ -67,6 +70,7 @@ class _ManageTaskFormState extends State<ManageTaskForm> {
               decoration: const InputDecoration(
                   labelText: 'Date', hintText: 'yyyy-MM-dd'),
               keyboardType: TextInputType.datetime,
+              initialValue: dateTime.toString(),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter date';
@@ -81,25 +85,13 @@ class _ManageTaskFormState extends State<ManageTaskForm> {
             const SizedBox(
               height: 8,
             ),
-            DropdownButtonFormField<TaskStatus>(
-              decoration: const InputDecoration(
-                labelText: 'Status',
-              ),
-              value: status,
-              items: TaskStatus.values.map((status) {
-                return DropdownMenuItem<TaskStatus>(
-                  value: status,
-                  child: Text(
-                      status.toString().split('.').last), // Display enum name
-                );
-              }).toList(),
-              onChanged: (TaskStatus? newValue) {
+            TaskStatusDropdown(
+              status: status,
+              onChanged: (TaskStatus value) {
                 setState(() {
-                  status = newValue ?? TaskStatus.todo;
+                  status = value;
                 });
               },
-              validator: (value) =>
-                  value == null ? 'Please select a status' : null,
             ),
             const SizedBox(
               height: 16,

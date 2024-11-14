@@ -17,9 +17,9 @@ class TaskProvider with ChangeNotifier {
 
   // Load tasks from local storage
   Future<void> loadTasks() async {
-    storage.removeItem('tasks');
+    // storage.removeItem('tasks');
     var storedData = storage.getItem('tasks');
-    print('storedData');
+    print('storedData >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     print(storedData);
     if (storedData != null) {
       List jsonData = jsonDecode(storedData);
@@ -30,16 +30,12 @@ class TaskProvider with ChangeNotifier {
   }
 
   void saveTasks() {
-    print('taskkkkkkkk');
-    print(_tasks);
     List<Map<String, dynamic>> data = _tasks.map((e) => e.toJson()).toList();
     String jsonString = jsonEncode(data);
     storage.setItem('tasks', jsonString);
   }
 
   void addTask(Task task) {
-    print('tasks');
-    print(task.toJson());
     _tasks.add(task);
     saveTasks();
     notifyListeners();
@@ -52,7 +48,7 @@ class TaskProvider with ChangeNotifier {
   }
 
   void updateTask(Task updatedTask) {
-    int index = _tasks.indexWhere((task) => task.id == updatedTask.id);
+    int index = _tasks.indexWhere((e) => e.id == updatedTask.id);
     if (index != -1) {
       _tasks[index] = updatedTask;
       saveTasks();
@@ -67,5 +63,25 @@ class TaskProvider with ChangeNotifier {
             title: 'No task',
             status: TaskStatus.todo,
             dateTime: DateTime.now()));
+  }
+
+  List<Task> getTasksFilter(TaskStatus status) {
+    return _tasks.where((element) => element.status == status).toList();
+  }
+
+  void changeStatus(Task task, TaskStatus status) {
+    int index = _tasks.indexWhere((e) => e.id == task.id);
+    if (index != -1) {
+      var newTask = Task(
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          dateTime: task.dateTime,
+          status: status);
+      _tasks[index] = newTask;
+      print({'changeStatus with length ... ', tasks.length});
+      saveTasks();
+      notifyListeners();
+    }
   }
 }

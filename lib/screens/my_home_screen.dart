@@ -3,9 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
+import 'package:todo_app/screens/my_profile_screen.dart';
 import 'package:todo_app/widgets/manage_task_form.dart';
 
 import '../models/Task.dart';
+import '../widgets/task_status_dropdown.dart';
 
 class MyHomeScreen extends StatefulWidget {
   const MyHomeScreen({super.key, required this.title});
@@ -64,17 +66,23 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
             centerTitle: false,
             actions: [
               Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    'assets/img/avatar-1.png',
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MyProfileScreen()));
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset(
+                          'assets/img/avatar-1.png',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
+                      ))),
             ],
             toolbarHeight: 70,
             bottom: const TabBar(
@@ -85,17 +93,13 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               ],
             ),
           ),
-          body: Consumer<TaskProvider>(builder: (context, provider, child) {
-            return TabBarView(
-              children: [
-                TaskList(tasks: provider.tasks),
-                TaskList(tasks: provider.tasks),
-                TabBarViewItem(
-                  counter: _counter,
-                ),
-              ],
-            );
-          }),
+          body: const TabBarView(
+            children: [
+              TaskList(status: TaskStatus.todo),
+              TaskList(status: TaskStatus.doing),
+              TaskList(status: TaskStatus.done),
+            ],
+          ),
           floatingActionButton: FloatingActionButton(
             tooltip: 'Increment',
             onPressed: _showTaskDialog,
@@ -106,45 +110,100 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
 }
 
 class TaskList extends StatelessWidget {
-  final List<Task> tasks;
+  final TaskStatus status;
 
-  const TaskList({super.key, required this.tasks});
+  const TaskList({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-      child: ListView.builder(
+    return Consumer<TaskProvider>(builder: (context, provider, child) {
+      final tasks = provider.getTasksFilter(status);
+
+      if (tasks.isEmpty) {
+        return const Center(
+            child: Text('No data', style: TextStyle(color: Colors.grey)));
+      }
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(8),
         itemCount: tasks.length,
         itemBuilder: (context, index) {
           final task = tasks[index];
-          return ListTile(
-            title: Text(task.title),
-            subtitle: Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: Text(task.description!),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          final isTaskDone = task.status == TaskStatus.done;
+
+          return Dismissible(
+              key: Key(task.id),
+              onDismissed: ((direction) {
+                provider.removeTask(task.id);
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Task was removed!')));
+              }),
+              background: Container(
+                color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              child: Card(
+                elevation: 1,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(DateFormat('dd-MMM-yyyy').format(task.dateTime)),
-                    Text(task.status.toShortString())
+                    ListTile(
+                      leading: Checkbox(
+                        key: Key(task.id),
+                        value: isTaskDone,
+                        onChanged: (bool? isChecked) {
+                          provider.changeStatus(task,
+                              isChecked! ? TaskStatus.done : TaskStatus.todo);
+                        },
+                      ),
+                      title: Text(
+                        task.title,
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            decoration:
+                                isTaskDone ? TextDecoration.lineThrough : null),
+                      ),
+                      subtitle: Text(
+                        task.description ?? '--',
+                        maxLines: 2,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(
+                          left: 20, right: 20, bottom: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            DateFormat('dd-MMM-yyyy kk:mm')
+                                .format(task.dateTime),
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey[600]),
+                          ),
+                          SizedBox(
+                              width: 80,
+                              child: TaskStatusDropdown(
+                                key: Key(task.id),
+                                customDecoration: const InputDecoration(
+                                    border: InputBorder.none),
+                                status: task.status,
+                                onChanged: (TaskStatus status) {
+                                  provider.changeStatus(task, status);
+                                },
+                              )),
+                        ],
+                      ),
+                    ),
                   ],
-                )
-              ],
-            ),
-            // leading: CheckboxListTile(
-            //     value: true,
-            //     onChanged: (value) {
-            //       print(value);
-            //     }),
-            // trailing: Text(task.status.toString()),
-          );
+                ),
+              ));
         },
-      ),
-    );
+      );
+    });
   }
 }
 

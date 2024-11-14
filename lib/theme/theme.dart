@@ -5,9 +5,7 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
     useMaterial3: true,
-    listTileTheme: const ListTileThemeData(
-        titleTextStyle: TextStyle(
-            color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600)),
+    listTileTheme: const ListTileThemeData(),
     textTheme: GoogleFonts.beVietnamProTextTheme(
       TextTheme(
         displayLarge: const TextStyle(
