@@ -24,7 +24,7 @@ class TaskStatusDropdown extends StatelessWidget {
             ? Colors.green
             : item == TaskStatus.doing
                 ? Colors.blue
-                : Colors.grey;
+                : Colors.yellow[800];
         return DropdownMenuItem<TaskStatus>(
           value: item,
           child: Text(

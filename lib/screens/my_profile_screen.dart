@@ -51,7 +51,6 @@ class MyProfileScreen extends StatelessWidget {
             Text(
               email,
               style: TextStyle(
-                fontSize: 16,
                 color: Colors.grey[600],
               ),
             ),
@@ -62,7 +61,6 @@ class MyProfileScreen extends StatelessWidget {
               bio,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
                 color: Colors.grey[700],
               ),
             ),
@@ -73,10 +71,9 @@ class MyProfileScreen extends StatelessWidget {
               onPressed: () {
                 // Handle edit profile button press
               },
-              style: ElevatedButton.styleFrom(
+              style: TextButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                textStyle: const TextStyle(fontSize: 16),
               ),
               child: const Text('Edit Profile'),
             ),
