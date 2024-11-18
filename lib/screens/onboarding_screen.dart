@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'my_home_screen.dart'; // Import the HomeScreen
@@ -16,17 +17,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   List<OnboardingItem> onboardingItems = [
     OnboardingItem(
-      image: 'assets/svg/undraw_to_do_list.svg',
-      title: 'Welcome to Our App',
-    ),
+        image: 'assets/svg/undraw_to_do_list.svg', title: 'Welcome to Our App'),
     OnboardingItem(
-      image: 'assets/svg/undraw_completing.svg',
-      title: 'Explore Features',
-    ),
+        image: 'assets/svg/undraw_completing.svg', title: 'Explore Features'),
     OnboardingItem(
-      image: 'assets/svg/undraw_welcome_cats.svg',
-      title: 'Get Started!',
-    ),
+        image: 'assets/svg/undraw_welcome_cats.svg', title: 'Get Started!')
   ];
 
   @override
@@ -47,20 +42,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> titleAccessors = [
+      AppLocalizations.of(context)!.onBoardingTitle1,
+      AppLocalizations.of(context)!.onBoardingTitle2,
+      AppLocalizations.of(context)!.onBoardingTitle3,
+    ];
     return Scaffold(
       body: Column(
         children: [
           Expanded(
             child: PageView.builder(
-              controller: _pageController,
-              itemCount: onboardingItems.length,
-              itemBuilder: (context, index) {
-                return OnboardingPage(
-                  image: onboardingItems[index].image,
-                  title: onboardingItems[index].title,
-                );
-              },
-            ),
+                controller: _pageController,
+                itemCount: onboardingItems.length,
+                itemBuilder: (context, index) {
+                  return OnboardingPage(
+                    image: onboardingItems[index].image,
+                    title: titleAccessors[index],
+                  );
+                }),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

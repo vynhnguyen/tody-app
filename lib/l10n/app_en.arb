@@ -1,0 +1,12 @@
+{
+  "helloWorld": "Hello World!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  },
+  "onBoardingTitle1": "Welcome to Our App",
+  "@onBoardingTitle1": {},
+  "onBoardingTitle2": "Explore Features",
+  "@onBoardingTitle2": {},
+  "onBoardingTitle3": "Get Started!",
+  "@onBoardingTitle3": {}
+}

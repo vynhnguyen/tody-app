@@ -1,0 +1,12 @@
+{
+  "helloWorld": "Xin chào thế giới!",
+  "@helloWorld": {
+    "description": "Lời chào mừng thông thường của lập trình viên mới sinh"
+  },
+  "onBoardingTitle1": "Chào mừng bạn đến với ứng dụng của chúng tôi",
+  "@onBoardingTitle1": {},
+  "onBoardingTitle2": "Khám phá các tính năng",
+  "@onBoardingTitle2": {},
+  "onBoardingTitle3": "Bắt đầu nào!",
+  "@onBoardingTitle3": {}
+}
