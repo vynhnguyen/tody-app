@@ -1,3 +1,7 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'Task.g.dart';
+
 enum TaskStatus { todo, doing, done }
 
 extension TaskStatusExtension on TaskStatus {
@@ -13,6 +17,7 @@ extension TaskStatusExtension on TaskStatus {
   }
 }
 
+@JsonSerializable()
 class Task {
   final String id;
   final String title;
@@ -28,23 +33,7 @@ class Task {
     required this.dateTime,
   });
 
-  static Task fromJson(Map<String, dynamic> json) {
-    return Task(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      status: TaskStatusExtension.fromString(json['status'] as String),
-      dateTime: DateTime.parse(json['dateTime']),
-    );
-  }
+  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'status': status.toShortString(),
-      'dateTime': dateTime.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> toJson() => _$TaskToJson(this);
 }
